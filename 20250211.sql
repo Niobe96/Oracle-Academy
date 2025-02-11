@@ -187,3 +187,17 @@ SELECT *
 FROM employees
 where FIRST_NAME BETWEEN '1' and 'C';
 
+SELECT * 
+FROM employees
+Where FIRST_NAME like 'S%';
+
+    -- AND 연산자 학습
+
+SELECT employee_id, last_name, job_id, salary
+FROM employees
+WHERE salary >= 10000
+AND job_id LIKE '%MAN%';
+
+SELECT last_name || '''s job category is '|| job_id AS"Job" 
+FROM employees
+WHERE SUBSTR(job_id, 4) = 'REP';
