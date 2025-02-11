@@ -190,6 +190,17 @@ ORDER BY last_name;
 /*14. 직무가 판매 사원이나 자재 담당자이고 급여가 $2,500, $3,500 또는 $7,000가 아닌 
 모든 사원의 성, 직무 및 급여를 표시합니다.*/
 
+/*15. 커미션이 20%인 모든 사원의 성, 급여 및 커미션을 표시하도록 lab_03_06.sql을
+수정합니다. lab_03_06.sql을 lab_03_15.sql로 다시 저장합니다. lab_03_15.sql의
+명령문을 다시 실행합니다.*/
+
+SELECT LAST_NAME Employee, SALARY Monthly_Salary, COMMISSION_PCT
+FROM Employees
+WHERE commission_pct = 0.2;
+
+/* 직급이 SA_REP 또는 ST_CLERK이고 급여가 $2,500, $3,500 또는 $7,000이 아닌 모든 사원의 성,
+ 직급 및 급여를 표시합니다.*/
+
 SELECT last_name,
        job_id,
        salary
@@ -311,18 +322,70 @@ FETCH NEXT 5 ROWS ONLY: 그 다음에 5개의 행만 가져옵니다. 즉, 6번�
 -- 단일 앰퍼샌드 치환변수 사용
 
 SELECT employee_id, last_name, salary, department_id
-FROM employees
-WHERE employee_id = &employee_num;
+FROM   employees
+WHERE  employee_id = &employee_num;
 
 -- 치환 변수를 사용하는 예제 응용 BETWEEN 연산자 추가
 
 SELECT employee_id, last_name, salary, department_id
-FROM employees
-WHERE employee_id BETWEEN &employee_first_num AND &employee_second_num;
+FROM   employees
+WHERE  employee_id BETWEEN &employee_first_num AND &employee_second_num;
 
 -- 치환 변수를 사용하는 문자 및 날짜 값
 
 SELECT last_name, department_id, salary*12
-FROM employees
-WHERE job_id = '&job_title' ;
+FROM   employees
+WHERE  job_id = '&job_title' ;
 
+SELECT COUNT(employee_id) AS EMPLOYEE_ID
+FROM   employees
+
+SELECT SYSDATE
+FROM DUAL;
+
+SELECT SESSIONTIMEZONE, CURRENT_DATE FROM DUAL;
+
+SELECT SESSIONTIMEZONE, CURRENT_TIMESTAMP FROM DUAL;
+
+SELECT last_name, (SYSDATE-hire_date)/7 "WEEKS"
+FROM employees
+WHERE department_id = 90;
+
+/*HR 부서에서 각 사원에 대해 사원 번호, 성, 급여 및 15.5% 인상된 급여(정수로 표현)를
+표시하는 보고서가 필요합니다. 열 레이블을 New Salary로 지정합니다. 작성한 SQL 문을
+lab_04_02.sql이라는 파일에 저장합니다.*/
+
+SELECT employee_id, last_name, salary, ROUND(salary*115.5/100) NEW_SALARY
+FROM employees
+ORDER BY employee_id;
+
+SELECT *
+FROM EMP w
+
+
+1) 
+SELECT *
+FROM emp 
+WHERE empno IN ( SELECT mgr FROM emp ) ;
+
+2) 
+SELECT M.*
+FROM emp m, emp w 
+WHERE m.empno = w.mgr ;
+
+SELECT m.*
+FROM emp m, emp w
+WHERE m.empno = w.mgr
+
+3) 
+SELECT * 
+FROM emp o
+WHERE EXISTS ( SELECT '1' FROM emp i
+                       WHERE i.mgr = o.empno ) ;
+4) 
+SELECT * 
+FROM emp o
+WHERE empno = ( SELECT mgr FROM emp i
+                           WHERE i.mgr = o.empno 
+                               AND rownum = 1 ) ;
+                  
