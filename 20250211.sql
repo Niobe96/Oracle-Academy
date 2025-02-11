@@ -250,3 +250,23 @@ FROM   employees
 WHERE  (department_id = 60
 OR     department_id = 80)
 AND    salary > 10000;
+
+-- rownun 연습 과제
+
+SELECT rownum, last_name, job_id,
+       department_id, to_char(hire_date, 'YYYY-MM-DD')
+FROM   employees
+WHERE  rownum <= 5
+ORDER BY hire_date DESC;
+
+SELECT rownum, last_name, job_id,
+       department_id, to_char(hire_date, 'YYYY-MM-DD')
+WHERE  rownum <= 5;
+
+SELECT rownum, last_name, job_id, department_id, to_char(hire_date, 'YYYY-MM-DD')
+FROM (
+    SELECT last_name, job_id, department_id, hire_date
+    FROM employees
+    ORDER BY hire_date DESC
+)
+WHERE rownum <= 5;
