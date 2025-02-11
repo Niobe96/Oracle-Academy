@@ -14,7 +14,8 @@ SELECT employee_id,
 FROM   employees;
 
 /*sal의 변수 명 지정 안됨 (AS), ANNUAL SALARY의 변수 명 지정 안됨 (AS),
-last name 뒤에 쉼표, sal x 12 뒤에 쉼표 오지 않음음*/
+last name 뒤에 쉼표, sal x 12 뒤에 쉼표 오지 않음*/
+
 /* HR 부서에서 모든 사원과 해당 직무 ID에 대한 보고서를 요청했습니다. 성과 직무 ID를
 이어서 표시하고(쉼표와 공백으로 구분) 열 이름을 Employee and Title로 지정합니다.*/
 
@@ -54,7 +55,7 @@ SELECT employee_id
               || department_id AS "THE_OUTPUT"
 FROM   employees
 
-       --user_tables 테이블의 모든 열을 표시하는 SELECT 문을 작성합니다.*/
+       --user_tables 테이블의 모든 열을 표시하는 SELECT 문을 작성합니다.
 
 SELECT *
 from   user_tables;SELECT *
@@ -131,8 +132,8 @@ SELECT last_name,
 FROM   employees
 WHERE  manager_id IS NULL
 
-/*9. 커미션을 받는 모든 사원의 성, 급여 및 커미션을 표시하는 보고서를 작성합니다. 급여 및
-커미션의 내림차순으로 데이터를 정렬합니다.
+/*9. 커미션을 받는 모든 사원의 성, 급여 및 커미션을 표시하는 보고서를 작성합니다. 
+급여 및 커미션의 내림차순으로 데이터를 정렬합니다.
 ORDER BY 절에서 열의 숫자 위치를 사용합니다.*/
 
 select   last_name,
@@ -183,8 +184,8 @@ WHERE    last_name LIKE '%a%'
 AND      last_name LIKE '%e%'
 ORDER BY last_name;
 
-/*14. 직무가 판매 사원이나 자재 담당자이고 급여가 $2,500, $3,500 또는 $7,000가 아닌 모든
-사원의 성, 직무 및 급여를 표시합니다.*/
+/*14. 직무가 판매 사원이나 자재 담당자이고 급여가 $2,500, $3,500 또는 $7,000가 아닌 
+모든 사원의 성, 직무 및 급여를 표시합니다.*/
 
 SELECT last_name,
        job_id,
@@ -197,7 +198,7 @@ AND    (
        OR     salary NOT IN 3500
        OR     salary NOT IN 7000);
 
--- 3. 데이터 제한 및 정렬
+       -- 3. 데이터 제한 및 정렬
 
 SELECT *
 FROM employees 
@@ -212,8 +213,12 @@ FROM employees
 --WHERE hire_date = '17/10/03';
 WHERE hire_date = to_date('20060103', 'YYYYMMDD');
 
--- VALUE 형식 확인SELECT *FROM nls_session_parameters;
--- DATE ALTER(형식 변경)ALTER sessionset nls_date_format = 'YYYY-MM-DD HH24:MI:SS';
+-- VALUE 형식 확인
+SELECT *
+FROM nls_session_parameters;
+
+-- DATE ALTER(형식 변경)
+ALTER sessionset nls_date_format = 'YYYY-MM-DD HH24:MI:SS';
 
 SELECT hire_date,TO_CHAR(hire_date, 'YYYY-MM-DD') 
 FROM employees;SELECT *
@@ -231,3 +236,17 @@ job_id LIKE '%MAN%';SELECT last_name
               || job_id AS"Job"
 FROM   employees
 WHERE  Substr(job_id, 4) = 'REP';
+
+-- 우선 순위 규칙
+
+SELECT last_name, department_id, salary
+FROM   employees
+WHERE  department_id = 60
+OR     department_id = 80
+AND    salary > 10000;
+
+SELECT last_name, department_id, salary
+FROM   employees
+WHERE  (department_id = 60
+OR     department_id = 80)
+AND    salary > 10000;
