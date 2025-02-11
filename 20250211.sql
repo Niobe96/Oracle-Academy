@@ -274,3 +274,48 @@ FROM   (
        ORDER BY hire_date DESC
        )      
 WHERE rownum <= 5;
+
+--SQL 행 제한 절 : 예제
+
+SELECT rownum, employee_id, first_name
+FROM employees
+ORDER BY employee_id
+FETCH FIRST 5 ROWS ONLY;
+/*이 구문은 결과에서 처음 5개의 행만 가져오도록 제한합니다.
+FETCH FIRST 5 ROWS ONLY는 쿼리 결과에서 상위 5개의 행만을 가져오는 기능을 합니다.*/
+
+SELECT rownum, employee_id, first_name
+FROM employees
+ORDER BY employee_id
+OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY
+/*이 부분은 **행 페이징(paging)**을 처리하는 구문입니다.
+OFFSET 5 ROWS: 첫 5개의 행을 건너뛰고 그 다음부터 결과를 반환합니다. 즉, 6번째 행부터 반환을 시작합니다.
+FETCH NEXT 5 ROWS ONLY: 그 다음에 5개의 행만 가져옵니다. 즉, 6번째 행부터 10번째 행까지를 반환합니다.*/
+
+              -- ORDER BY 함수 두 번 사용
+
+              SELECT *
+                     FROM (
+                     SELECT employee_id, first_name
+                     FROM employees
+                     ORDER BY employee_id
+                     OFFSET 5 ROWS FETCH NEXT 5 ROWS ONLY
+                     )
+              ORDER BY first_name;
+
+-- 단일 앰퍼샌드 치환변수 사용
+
+SELECT employee_id, last_name, salary, department_id
+FROM employees
+WHERE employee_id = &employee_num;
+
+-- 치환 변수를 사용하는 예제 응용 BETWEEN 연산자 추가
+SELECT employee_id, last_name, salary, department_id
+FROM employees
+WHERE employee_id BETWEEN &employee_first_num AND &employee_second_num;
+
+-- 치환 변수를 사용하는 문자 및 날짜 값
+SELECT last_name, department_id, salary*12
+FROM employees
+WHERE job_id = '&job_title' ;
+
