@@ -362,27 +362,28 @@ ORDER BY employee_id;
 SELECT *
 FROM EMP w
 
+--예제 문제(다른 결과값 하나를 찾으시오)
 
-1) 
+--1) 
 SELECT *
 FROM emp 
 WHERE empno IN ( SELECT mgr FROM emp ) ;
 
-2) 
+--2) 
 SELECT M.*
 FROM emp m, emp w 
 WHERE m.empno = w.mgr ;
 
-SELECT m.*
+SELECT  m.*
 FROM emp m, emp w
 WHERE m.empno = w.mgr
 
-3) 
+--3) 
 SELECT * 
 FROM emp o
 WHERE EXISTS ( SELECT '1' FROM emp i
                        WHERE i.mgr = o.empno ) ;
-4) 
+--4) 
 SELECT * 
 FROM emp o
 WHERE empno = ( SELECT mgr FROM emp i
