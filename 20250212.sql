@@ -96,6 +96,19 @@ NVL2(commission_pct,
 'SAL+COMM', 'SAL') income
 FROM employees WHERE department_id IN (50, 80);
 
+-- NULL IF 함수 활용
+
+select FIRST_NAME, Length(FIRST_NAME) "expr1",
+       LAST_NAME, LENgth(LAST_NAME) "expr2",
+       NULLIF(length(FIRST_NAME), length(last_name)) result
+from EMPLOYEES; 
+
+-- COALESCE 함수 활용용
+
+SELECT last_name, salary, commission_pct,
+COALESCE((salary+(commission_pct*salary)), salary+2000)"New Salary"
+FROM employees;
+
     -- 연습문제 4 
 
 /*2. HR 부서에서 각 사원에 대해 사원 번호, 성, 급여 및 15.5% 인상된 급여(정수로 표현)를
@@ -215,6 +228,7 @@ July, 2000"과 유사한 형식으로 지정합니다.*/
 ALTER SESSION SET NLS_DATE_LANGUAGE = 'ENGLISH';
 
 select  last_name, hire_date,
-        TO_CHAR(NEXT_DAY(ADD_MONTHS(hire_date, 6),'MONDAY'),'fmDAY," the" fmddspth "of" fmMONTH "," fmYYYY')
-        REVIEW
+        TO_CHAR(NEXT_DAY(ADD_MONTHS(hire_date, 6),'MONDAY'),
+                'fmDAY," the" fmddspth "of" fmMONTH "," fmYYYY')
+                REVIEW
 from    employees;
