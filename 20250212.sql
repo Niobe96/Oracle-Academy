@@ -41,10 +41,74 @@ DROP TABLE COUNTRIES_COPY;
 
 -- 날짜 함수
 
-select trunc(trunc(sysdate, 'year'),'month')
-from dual;
+SELECT NEXT_day('01-jan-05', 2)
+From DUAL;
 
-    -- 연습문제
+SELECT  NEXT_DAY(SYSDATE, 'FRIDAY') 
+FROM    dual;
+ALTER SESSION SET NLS_DATE_LANGUAGE = 'ENGLISH';
+
+SELECT * 
+FROM NLS_SESSION_PARAMETERS 
+WHERE PARAMETER = 'NLS_DATE_LANGUAGE';
+
+SELECT TRUNC(TRUNC('01-JAN-05', 'YEAR'),'MONTH')
+FROM DUAL;
+
+SELECT 
+    TO_DATE('2005-09-12','YYYY-MM-DD') - TO_DATE('2004-01-04', 'YYYY-MM-DD') "BETWEEN DAYS"
+FROM 
+    DUAL;
+
+ -- 5. 변환 함수 및 조건부 표현식 사용
+
+SELECT  LAST_NAME,
+        TO_CHAR(HIRE_DATE, 'fmDD MONTH YYYY') AS "HIRE DATE"
+FROM    EMPLOYEES;
+
+SELECT last_name,
+    TO_CHAR(hire_date, 
+            'fmDdspth "of" Month YYYY fmHH:MI:SS AM') HIREDATE
+FROM employees;
+
+SELECT last_name,
+ TO_CHAR(hire_date, 'fmDD Month YYYY')
+ AS HIREDATE
+ FROM   employees;
+
+/*TO_CHAR(date, 'DD MONTH YYYY')는 불필요한 공백을 포함할 수 있음.
+FM을 사용하면 공백이 제거되고, 한 자리 숫자의 0도 자동으로 사라짐.
+FM을 붙이면 가독성이 좋아지고, UI나 레포트에서 불필요한 공백을 방지할 수 있음.
+👉 날짜 포맷을 좀 더 깔끔하게 출력하고 싶다면 FM을 붙이는 것이 좋음! 🚀*/
+
+SELECT last_name, salary, commission_pct,
+    (salary*12) + (salary*12*commission_pct) AN_SAL
+FROM   employees
+ORDER BY AN_SAL DESC;
+
+SELECT last_name, salary, NVL(commission_pct, 0),
+(salary*12) + (salary*12*NVL(commission_pct, 0)) AN_SAL
+FROM employees
+ORDER BY AN_SAL DESC, LAST_NAME DESC;
+
+SELECT last_name, salary, commission_pct,
+NVL2(commission_pct,
+'SAL+COMM', 'SAL') income
+FROM employees WHERE department_id IN (50, 80);
+
+    -- 연습문제 4 
+
+/*2. HR 부서에서 각 사원에 대해 사원 번호, 성, 급여 및 15.5% 인상된 급여(정수로 표현)를
+표시하는 보고서가 필요합니다. 열 레이블을 New Salary로 지정합니다. 작성한 SQL 문을
+lab_04_02.sql이라는 파일에 저장합니다.*/
+
+select EMPLOYEE_ID, last_name, salary, RPAD(TO_CHAR(salary * 1.155, '99999.00'), 9, '0') "New Salary"
+from EMPLOYEES
+order by "New Salary" DESC;
+
+select EMPLOYEE_ID, last_name, salary, TO_CHAR(salary * 1.155, '99999.00') "New Salary"
+from EMPLOYEES
+order by "New Salary" DESC;
 
 /*4. 새 급여에서 이전 급여를 빼는 열을 추가하도록 LAB_04_02.SQL의 QUERY를 수정합니다.
 열 레이블을 INCREASE로 지정합니다. 파일 내용을 LAB_04_04.SQL로 저장합니다. 수정한
@@ -60,11 +124,22 @@ A. "J", "A" 또는 "M"으로 시작하는 이름을 가진 모든 사원의 성(
 나머지는 모두 소문자)과 성의 길이를 표시하는 QUERY를 작성합니다. 각 열에 적절한
 레이블을 지정합니다. 사원의 성을 기준으로 결과를 정렬합니다.*/
 
-SELECT  LAST_NAME "NAME", LENGTH(LAST_NAME) "LENGTH"
+SELECT  INITCAP(LAST_NAME) "NAME", LENGTH(LAST_NAME) "LENGTH"
 FROM    EMPLOYEES
 WHERE   LAST_NAME LIKE 'J%' OR 
         LAST_NAME LIKE 'A%' OR 
-        LAST_NAME LIKE 'M%';
+        LAST_NAME LIKE 'M%'
+ORDER BY last_name;
+
+SELECT
+    initcap(last_name) AS name,
+    length(last_name)  AS length
+FROM
+    employees
+WHERE
+    substr(upper(last_name),1,1) IN ( 'J', 'A', 'M' )
+ORDER BY
+    last_name;
 
 /*B. 유저에게 성의 첫 문자를 입력하는 프롬프트를 표시하도록 QUERY를 재작성합니다.
 예를 들어, 문자 입력 프롬프트가 표시되었을 때 유저가 "H"(대문자)를 입력하면 성이
@@ -86,30 +161,60 @@ WHERE LOWER(LAST_NAME) LIKE '&LAST_NAME%';
 지정합니다. 재직 개월 수에 따라 결과를 정렬합니다. 개월 수는 가장 가까운 정수로
 반올림해야 합니다.*/
 
-SELECT LAST_NAME, ROUND(MONTHS_BETWEEN(SYSDATE, HIRE_DATE)) MONTHS_WORKED
-FROM EMPLOYEES
-ORDER BY MONTHS_WORKED;
+SELECT      LAST_NAME, ROUND(MONTHS_BETWEEN(SYSDATE, HIRE_DATE)) MONTHS_WORKED
+FROM        EMPLOYEES
+ORDER BY    MONTHS_WORKED;
+
+SELECT      LAST_NAME, TO_NUMBER(TO_CHAR(SYSDATE, 'MM')) - TO_NUMBER(TO_CHAR(HIRE_DATE, 'MM')) MONTHS_WORKED
+FROM        EMPLOYEES
+ORDER BY    MONTHS_WORKED;
+--문제점 1: 연도를 고려하지 않음
 
 /*7. 모든 사원의 성과 급여를 표시하기 위한 QUERY를 작성합니다. 급여가 15자 길이로
 표시되고 왼쪽에 $ 기호가 채워지도록 형식을 지정합니다. 열 레이블을 SALARY로
 지정합니다.*/
 
-SELECT LAST_NAME, LPAD(SALARY,15,'$') SALARY
-FROM EMPLOYEES;
+SELECT  LAST_NAME, LPAD(SALARY,15,'$') SALARY
+FROM    EMPLOYEES;
 
 /*8. 사원의 성을 표시하고 급여 액수를 별표로 나타내는 QUERY를 작성합니다. 각 별표는
 $1,000을 나타냅니다. 급여의 내림차순으로 데이터를 정렬합니다. 열 레이블을
 EMPLOYEES_AND_THEIR_SALARIES로 지정합니다.*/
 
-SELECT LAST_NAME, RPAD('*', TRUNC(SALARY,-3)/1000, '*') EMPLOYEES_AND_THEIR_SALARIES
-FROM EMPLOYEES
-ORDER BY EMPLOYEES_AND_THEIR_SALARIES DESC;
+SELECT      LAST_NAME, RPAD('*', TRUNC(SALARY,-3)/1000, '*') EMPLOYEES_AND_THEIR_SALARIES
+FROM        EMPLOYEES
+ORDER BY    EMPLOYEES_AND_THEIR_SALARIES DESC;
 
 /*9. 부서 90의 모든 사원에 대해 성 및 재직 기간(주 단위)을 표시하도록 QUERY를 작성합니다.
 주를 나타내는 숫자 열의 레이블을 TENURE로 지정합니다. 주를 나타내는 숫자 값을
 소수점 왼쪽에서 TRUNCATE합니다. 직원 재직 기간의 내림차순으로 레코드를 표시합니다.*/
 
-SELECT LAST_NAME, TRUNC(MONTHS_BETWEEN(SYSDATE, HIRE_DATE) * 7 ,0) TENURE
-FROM EMPLOYEES
-ORDER BY TENURE DESC;
+SELECT      LAST_NAME, TRUNC((SYSDATE - HIRE_DATE) / 7) TENURE
+FROM        EMPLOYEES
+WHERE       DEPARTMENT_ID = 90
+ORDER BY    TENURE DESC;
 
+select salary
+from employees;
+
+    -- 연습문제 5
+
+/*1. 각 사원에 대해 다음과 같이 출력하는 보고서를 작성합니다.
+<employee last name> earns <salary> monthly but wants <3 times salary.>
+열 레이블을 Dream Salaries로 지정합니다.*/
+
+select  last_name || ' earns' || TO_CHAR(salary, '$999,999.00') || ' monthly but wants' 
+        ||TO_CHAR(salary * 3, '$999,999.00') || '.' AS "Dreams Salaries"
+from employees
+Order by salary desc; 
+
+/*2. 각 사원의 성, 채용 날짜 및 근무 6개월 후 첫번째 월요일에 해당하는 급여 심의 날짜를
+표시합니다. 열 레이블을 REVIEW로 지정합니다. 날짜 형식을 "Monday, the Thirty-First of
+July, 2000"과 유사한 형식으로 지정합니다.*/
+
+ALTER SESSION SET NLS_DATE_LANGUAGE = 'ENGLISH';
+
+select  last_name, hire_date,
+        TO_CHAR(NEXT_DAY(ADD_MONTHS(hire_date, 6),'MONDAY'),'fmDAY," the" fmddspth "of" fmMONTH "," fmYYYY')
+        REVIEW
+from    employees;
