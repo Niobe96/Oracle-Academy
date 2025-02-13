@@ -210,25 +210,3 @@ ORDER BY    TENURE DESC;
 select salary
 from employees;
 
-    -- 연습문제 5
-
-/*1. 각 사원에 대해 다음과 같이 출력하는 보고서를 작성합니다.
-<employee last name> earns <salary> monthly but wants <3 times salary.>
-열 레이블을 Dream Salaries로 지정합니다.*/
-
-select  last_name || ' earns' || TO_CHAR(salary, '$999,999.00') || ' monthly but wants' 
-        ||TO_CHAR(salary * 3, '$999,999.00') || '.' AS "Dreams Salaries"
-from employees
-Order by salary desc; 
-
-/*2. 각 사원의 성, 채용 날짜 및 근무 6개월 후 첫번째 월요일에 해당하는 급여 심의 날짜를
-표시합니다. 열 레이블을 REVIEW로 지정합니다. 날짜 형식을 "Monday, the Thirty-First of
-July, 2000"과 유사한 형식으로 지정합니다.*/
-
-ALTER SESSION SET NLS_DATE_LANGUAGE = 'ENGLISH';
-
-select  last_name, hire_date,
-        TO_CHAR(NEXT_DAY(ADD_MONTHS(hire_date, 6),'MONDAY'),
-                'fmDAY," the" fmddspth "of" fmMONTH "," fmYYYY')
-                REVIEW
-from    employees;
