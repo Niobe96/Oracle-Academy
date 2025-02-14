@@ -252,7 +252,7 @@ from employees;
  from employees
  GROUP BY DEPARTMENT_ID
  HAVING COUNT(job_id) >= 2
- ORDER BY DEPARTMENT_ID;
+ ORDER BY COUNT(job_id) DESC;
 
 
  SELECT SUBSTR(job_id, 4, 9), count(distinct DEPARTMENT_ID)
