@@ -12,7 +12,8 @@ FROM   job_grades;
 /*다음 명령문에 네 개의 코딩 오류가 있습니다. 식별할 수 있습니까?*/
 
 SELECT employee_id,
-       last_name sal x 12 annual salary
+       last_name,
+       SALARY * 12 AS annual_salary
 FROM   employees;
 
 /*sal의 변수 명 지정 안됨 (AS), ANNUAL SALARY의 변수 명 지정 안됨 (AS),
@@ -24,7 +25,7 @@ last name 뒤에 쉼표, sal x 12 뒤에 쉼표 오지 않음*/
 SELECT last_name
               || ', '
               || job_id AS "Employee and Title"
-FROM   employees
+FROM   employees;
 
 /* HR 부서에서 모든 사원과 해당 직무 ID에 대한 보고서를 요청했습니다. 성과 직무 ID를 찾으십시오 */
 
@@ -55,7 +56,7 @@ SELECT employee_id
               || manager_id
               || ','
               || department_id AS "THE_OUTPUT"
-FROM   employees
+FROM   employees;
 
        --user_tables 테이블의 모든 열을 표시하는 SELECT 문을 작성합니다.
 
@@ -133,7 +134,7 @@ ORDER BY hire_date;
 SELECT last_name,
        job_id
 FROM   employees
-WHERE  manager_id IS NULL
+WHERE  manager_id IS NULL;
 
 /*9. 커미션을 받는 모든 사원의 성, 급여 및 커미션을 표시하는 보고서를 작성합니다. 
 급여 및 커미션의 내림차순으로 데이터를 정렬합니다.
@@ -216,7 +217,7 @@ AND    (
 
 SELECT *
 FROM employees 
-WHERE department_id = 90
+WHERE department_id = 90;
 
 SELECT last_name, job_id, department_id 
 FROM employees 
@@ -229,7 +230,8 @@ WHERE hire_date = to_date('20060103', 'YYYYMMDD');
 
 -- VALUE 형식 확인
 SELECT *
-FROM nls_session_parameters;
+FROM nls_session_parameters
+WHERE parameter = 'NLS_DATE_FORMAT';
 
 -- DATE ALTER(형식 변경)
 ALTER sessionset nls_date_format = 'YYYY-MM-DD HH24:MI:SS';

@@ -242,7 +242,7 @@ FROM EMPLOYEES
 WHERE DEPARTMENT_ID IN (SELECT DEPARTMENT_ID
                         FROM EMPLOYEES
                         WHERE LAST_NAME = '&LAST_NAME')
-AND LAST_NAME <> '&LAST_NAME'
+AND LAST_NAME <> '&LAST_NAME';
 
 /*2. 평균 급여 이상을 받는 모든 사원의 사원 번호, 성 및 급여를 표시하는 보고서를 작성합니다.
 급여의 오름차순으로 결과를 정렬합니다.*/
