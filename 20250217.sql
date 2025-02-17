@@ -204,3 +204,27 @@ SELECT distinct *
  SELECT distinct * 
   FROM EMP
  WHERE DEPTNO IN (SELECT DEPTNO FROM DEPT) ; 
+
+SELECT *
+  FROM CUSTOMERS C
+  JOIN ORDERS O
+    ON C.CUST_ID = O.CUST_ID;
+
+
+SELECT *
+from CUSTOMERS C LEFT OUTER JOIN ORDERS O
+on c.cust_id = o.cust_id
+and TO_CHAR(o.order_date,'YYYY-MM-DD') Between '2008-02-01' and '2008-02-28';
+
+
+SELECT HIREDATE
+from EMPDT
+WHERE TO_DATE(HIREDATE,'YYYY-MM-DD') IS NULL
+
+SELECT HIREDATE
+FROM EMPDT
+WHERE CASE REGEXP_LIKE(hiredate, '^\d{4}-\d{2}-\d{2}$')
+  THEN 0 
+        ELSE 1 
+      END = 1;
+
