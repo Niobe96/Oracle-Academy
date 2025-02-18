@@ -221,6 +221,8 @@ SELECT GRADE_LEVEL,
     LOWEST_SAL,
     HIGHEST_SAL FROM JOB_GRADES;
 
+-- 연습문제 8
+
 /*1. HR 부서에서 유저에게 사원의 성을 입력하라는 프롬프트를 표시하는 query를 요구합니다.
 그런 다음 이 query는 유저가 제공한 이름을 가진 사원과 동일한 부서에서 근무하는 사원의
 성과 채용 날짜를 표시합니다(해당 사원은 제외). 예를 들어, 유저가 Zlotkey를 입력하면
@@ -296,3 +298,43 @@ WHERE   salary IN
                 (   SELECT MIN(salary)
                     FROM employees
                     GROUP BY department_id);
+
+/*6. HR을 위해 Executive 부서의 모든 사원에 대해 부서 ID, 성 및 직무 ID를 표시하는 보고서를
+작성합니다.*/
+
+select DEPARTMENT_ID, last_name, JOB_ID
+from employees
+where department_id = (select DEPARTMENT_ID 
+        from departments 
+        where department_name like 'Executive') 
+
+/*7. 부서 60의 사원보다 급여가 많은 모든 사원 리스트를 표시하는 보고서를 작성합니다*/
+
+select last_name
+from employees
+where salary > (select MIN(salary)
+                from employees
+                where department_id = 60)
+
+/*8. 평균보다 많은 급여를 받고 성에 문자 "u"가 포함된 사원이 속한 부서에서 근무하는 모든
+사원의 사원 번호, 성 및 급여를 표시하도록 lab_08_03.sql의 query를 수정합니다.
+lab_08_03.sql을 lab_08_08.sql로 다시 저장합니다. lab_08_08.sql의 명령문을
+실행합니다.*/
+
+select employee_id, last_name, SALARY
+from employees
+where salary > (select AVG(SALARY)
+                from employees)
+and department_id in (select DEPARTMENT_ID
+                        from employees
+                        where last_name like '%u%')
+
+select employee_id, last_name, SALARY
+from employees
+where department_id in (select DEPARTMENT_ID
+                        from employees
+                        where last_name like '%u%')
+
+select *
+from employees
+where last_name like '%u%'
