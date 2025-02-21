@@ -36,10 +36,12 @@ def login_macro():
 
     # 로그인 버튼 클릭
     pyautogui.click(-2145, 778)  # 좌표 조정 필요
-    time.sleep(1.2)
+    time.sleep(2)
 
     #확인 버튼 클릭
     pyautogui.click(-1989,672)  # 좌표 조정 필요
+    time.sleep(0.2)
+    pyautogui.click(-1989,672)
     time.sleep(0.2)
 
      #출결체크 버튼 클릭
