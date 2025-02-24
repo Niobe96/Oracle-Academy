@@ -294,3 +294,8 @@ select empno, sum(SAL)
 from emp e
 group by empno;
 
+SELECT * 
+FROM (SELECT * 
+       FROM emp 
+      ORDER BY sal DESC)
+WHERE rownum = 1;
