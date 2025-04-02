@@ -212,3 +212,15 @@ ORDER BY e.department_id;
 select * from employees
 where DEPARTMENT_ID = 60;
 
+select * from employees;
+
+select avg(salary)
+from EMPLOYEES
+group by department_id;
+
+select job_id, count(*)
+from EMPLOYEES
+where job_id = 'IT_PROG'
+group by job_id;
+
+select first_name||'Monthly Salary'|| salary as "Salary Details" from employees;

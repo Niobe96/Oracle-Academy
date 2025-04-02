@@ -50,7 +50,10 @@ def login_macro():
 
     #퇴실 버튼 클릭
     pyautogui.click(-2143,882)  # 좌표 조정 필요
+    time.sleep(1)
 
+    # 엔터 키 입력
+    keyboard.press_and_release('enter')
 
 # 메인 실행 함수
 def main():
