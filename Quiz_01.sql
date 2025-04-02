@@ -17,6 +17,9 @@ fetch first 10 rows only;
 select * from kdt_sepsis_crf_apache
 where id = 264;
 
+select * from kdt_sepsis_crf_sofa
+fetch first 10 rows only;
+
 /*2. APACHE II 점수 분포를 구간별로 집계하세요.
 설명: APACHE II 점수를 구간별(0–9, 10–19, 20–29, 30 이상)로 나누어 환자 수를 계산합니다.
 */
@@ -86,4 +89,49 @@ group by CASE
 설명: APACHE II 기반 예측 사망률이 50% 초과임에도 실제로 생존한 환자만을 조회합니다.
 */
 
-select * from 
+select a.ID, a."APACHE II score" AS "APACHE II 점수", round(a."Mortality" * 100,2) AS "예측 사망률", '생존' AS "실제 결과"
+from kdt_sepsis_crf_apache a join kdt_sepsis_crf_sofa s on a.Id = s.ID
+where a."Mortality" > 0.5 AND s."result" in (0,1);
+
+/*6. 예측 사망률은 낮았으나 실제로 사망한 환자 목록을 조회하세요.
+
+설명: APACHE II 예측 사망률이 10% 미만이었으나 실제로는 사망한 환자를 조회합니다.
+*/
+
+select a.ID, a."APACHE II score" AS "APACHE II 점수", round(a."Mortality" * 100,2) AS "예측 사망률", '사망' AS "실제 결과"
+from kdt_sepsis_crf_apache a join kdt_sepsis_crf_sofa s on a.Id = s.ID
+where a."Mortality" < 0.1 AND s."result" in (2,3);
+
+/*7. 환자별 APACHE II 점수와 SOFA 점수를 함께 조회하세요.
+
+설명: 환자마다의 APACHE II 점수와 SOFA 점수를 동시에 조회하여 두 점수 간 상관관계를 분석합니다.
+*/
+
+select a.ID, a."APACHE II score" AS "APACHE II 점수", 
+    s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) AS "SOFA 점수"
+from kdt_sepsis_crf_apache a join kdt_sepsis_crf_sofa s on a.Id = s.ID;
+
+
+/*8. APACHE II 점수와 SOFA 점수로 복합 고위험군 환자 목록을 조회하고, 실제 사망률을 분석하세요.*/
+
+
+WITH total_deaths AS (
+    SELECT id
+    FROM kdt_sepsis_crf_sofa
+    WHERE "Death_time" IS NOT NULL
+)
+
+select CASE 
+    WHEN a."APACHE II score" >= 25 AND s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) >= 10 THEN '초고위험군'
+    WHEN a."APACHE II score" >= 25 AND s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) < 10 THEN 'APACHE 고위험군'
+    WHEN a."APACHE II score" < 25 AND s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) >= 10 THEN 'SOFA 고위험군'
+    ELSE '저위험군' END AS "복합 위험군", count(a.ID) AS "환자 수",  
+    round(avg(a."APACHE II score"),2) AS "APACHE II 점수", round(AVG(s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END)),2) AS "평균 SOFA 점수",
+    round((count(td.ID) / count(*) * 100),2) AS "실제 사망률"
+    from kdt_sepsis_crf_apache a join kdt_sepsis_crf_sofa s on a.Id = s.ID left join total_deaths td on s.id = td.id
+    group by CASE WHEN a."APACHE II score" >= 25 AND s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) >= 10 THEN '초고위험군'
+    WHEN a."APACHE II score" >= 25 AND s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) < 10 THEN 'APACHE 고위험군'
+    WHEN a."APACHE II score" < 25 AND s."GCS" + s."Cr" + s."Bil" + (CASE WHEN s."PaO2"/s."FiO2"<200 THEN 3 ELSE 0 END) + (CASE WHEN s."Plt"<50 THEN 3 ELSE 0 END) + (CASE WHEN s."MBP"<70 THEN 1 ELSE 0 END) >= 10 THEN 'SOFA 고위험군'
+    ELSE '저위험군' END
+    order by 5 DESC;
+    
