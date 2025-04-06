@@ -46,7 +46,7 @@ SELECT BOARD_ID, writer_id, title, price, CASE
     END as STATUS
 from USED_GOODS_BOARD
 where TO_char(CREATED_DATE,'YYYY-MM-DD') = '2022-10-05'
-order by BOARD_ID DESC
+order by BOARD_ID DESC;
 
 -- 코드를 작성해주세요
 select G.SCORE, G.EMP_NO, E.EMP_NAME, E.POSITION, E.EMAIL
@@ -56,4 +56,14 @@ from HR_GRADE G
 where year = 2022
 group by G.EMPNO
 order by score DESC
-limit 1
+limit 1;
+
+select *
+from regions
+
+INSERT INTO (SELECT l.location_id, l.city, l.country_id
+             FROM loc l
+             JOIN countries c ON l.country_id = c.country_id
+             JOIN regions USING(region_id)
+             WHERE region_name = 'Europe')
+VALUES (3300, 'Cardiff', 'UK');

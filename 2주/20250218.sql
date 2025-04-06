@@ -38,7 +38,7 @@ SELECT DEPTNO, NULL, SUM(SAL), COUNT(*)
  values (8000,'kim', 'salesman', 7788, '25/02/18', 8000, NULL, 30);
 
  select *
- from emp
+ from emp;
 
  select current_date
  from dual
